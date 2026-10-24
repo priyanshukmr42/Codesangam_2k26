@@ -25,12 +25,21 @@ function App() {
     dinner: { optedIn: true, scanned: false }
   });
 
-  const today = new Date().toISOString().split('T')[0];
-  const currentHour = new Date().getHours();
+  const now = new Date();
+  const currentHour = now.getHours();
 
-  const isBreakfastLocked = currentHour >= 6;
-  const isLunchLocked = currentHour >= 11;
-  const isDinnerLocked = currentHour >= 18;
+  const isAfterDinner = currentHour >= 21;
+
+  const targetDateObj = new Date(now);
+  if (isAfterDinner) {
+    targetDateObj.setDate(now.getDate() + 1);
+  }
+
+  const today = targetDateObj.toISOString().split('T')[0];
+
+  const isBreakfastLocked = isAfterDinner ? false : currentHour >= 6;
+  const isLunchLocked = isAfterDinner ? false : currentHour >= 11;
+  const isDinnerLocked = isAfterDinner ? false : currentHour >= 18;
 
   useEffect(() => {
     onAuthStateChanged(auth, async (currentUser) => {
@@ -147,7 +156,7 @@ function App() {
                 <button className="btn-no mt-10" onClick={() => setShowCamera(false)}>Close Camera</button>
               </div>
             ) : (
-              <button className="btn-primary" onClick={() => setShowCamera(true)}>📷 Open Camera Scanner</button>
+              <button className="btn-primary" onClick={() => setShowCamera(true)}> Open Camera Scanner</button>
             )}
           </div>
 
